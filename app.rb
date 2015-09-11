@@ -121,13 +121,19 @@ class Isucon3App < Sinatra::Base
 
     page  = params["page"].to_i
     total = mysql.xquery('SELECT count(*) AS c FROM memos WHERE is_private=0').first["c"]
-    memos = mysql.xquery("SELECT * FROM memos WHERE is_private=0 ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}")
+    memos = mysql.xquery(
+      "SELECT
+           memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at
+       FROM
+           memos inner join users on users.id = memos.user
+       WHERE
+           is_private=0
+       ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}")
+
     if memos.count == 0
       halt 404, "404 Not Found"
     end
-    memos.each do |row|
-      row["username"] = mysql.xquery("SELECT username FROM users WHERE id=?", row["user"]).first["username"]
-    end
+
     erb :index, :layout => :base, :locals => {
       :memos => memos,
       :page  => page,
