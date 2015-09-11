@@ -39,6 +39,7 @@ def memo_html_key(memo_id)
 end
 
 connection.xquery("SELECT * FROM memos").each do |row|
+  puts "id: #{row["id"]} start"
   content = row['content']
   memo_id = row['id']
 
