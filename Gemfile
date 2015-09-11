@@ -7,6 +7,7 @@ gem 'dalli'
 gem 'erubis'
 gem 'foreman'
 gem 'mysql2-cs-bind'
+gem 'unicron'
 
 group :development do
   # run "bundle exec shotgun" on development
