@@ -8,6 +8,8 @@ gem 'erubis'
 gem 'foreman'
 gem 'mysql2-cs-bind'
 gem 'unicron'
+gem 'redis'
+gem 'hiredis'
 
 group :development do
   # run "bundle exec shotgun" on development
