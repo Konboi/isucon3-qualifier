@@ -243,7 +243,7 @@ class Isucon3App < Sinatra::Base
     memo_id = mysql.last_id
 
     memo_html_key = memo_html_key(memo_id)
-    content_html  = gen_markdown(contentparams["content"])
+    content_html  = gen_markdown(params["content"])
     redis_db.set(memo_html_key, content_html)
 
     redirect "/memo/#{memo_id}"
