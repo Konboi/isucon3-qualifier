@@ -8,13 +8,11 @@ require 'erubis'
 require 'tempfile'
 require 'redis'
 require 'hiredis'
+require 'redis-rack'
 
 class Isucon3App < Sinatra::Base
   $stdout.sync = true
-  use Rack::Session::Dalli, {
-    :key => 'isucon_session',
-    :cache => Dalli::Client.new('localhost:11211')
-  }
+  use Rack::Session::Redis, :expire_after => 30 * 24 * 60 * 60
 
   helpers do
     set :erb, :escape_html => true
