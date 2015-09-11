@@ -9,6 +9,7 @@ require 'tempfile'
 require 'redis'
 require 'hiredis'
 require 'redis-rack'
+require "rack/session/redis"
 
 class Isucon3App < Sinatra::Base
   $stdout.sync = true
@@ -31,7 +32,7 @@ class Isucon3App < Sinatra::Base
     end
 
     def redis_db
-      Thread.current[:isu4_db] ||= Redis.new(
+      Thread.current[:isu3_redis_db] ||= Redis.new(
         :host   => "127.0.0.1",
         :port   => 6379,
         :driver => :hiredis

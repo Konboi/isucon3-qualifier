@@ -10,7 +10,7 @@ gem 'mysql2-cs-bind'
 gem 'unicron'
 gem 'redis'
 gem 'hiredis'
-gem 'redis-rack'
+gem 'rack-session-redis'
 
 group :development do
   # run "bundle exec shotgun" on development
