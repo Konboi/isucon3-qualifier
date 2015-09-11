@@ -2,6 +2,7 @@ require 'mysql2-cs-bind'
 require 'redis'
 require 'hiredis'
 require 'json'
+require 'tempfile'
 
 def connection
   config = JSON.parse(IO.read(File.dirname(__FILE__) + "/../config/#{ ENV['ISUCON_ENV'] || 'local' }.json"))['database']
@@ -45,4 +46,5 @@ connection.xquery("SELECT * FROM memos").each do |row|
   memo_html_key = memo_html_key(memo_id)
 
   redis_db.set(memo_html_key, content_html)
+  puts "id: #{row["id"]} end"
 end
