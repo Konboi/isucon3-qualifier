@@ -6,6 +6,8 @@ require 'dalli'
 require 'rack/session/dalli'
 require 'erubis'
 require 'tempfile'
+require 'redis'
+require 'hiredis'
 
 class Isucon3App < Sinatra::Base
   $stdout.sync = true
@@ -20,13 +22,21 @@ class Isucon3App < Sinatra::Base
     def connection
       config = JSON.parse(IO.read(File.dirname(__FILE__) + "/../config/#{ ENV['ISUCON_ENV'] || 'local' }.json"))['database']
 
-      Thread.current[:isu4_db] ||= Mysql2::Client.new(
+      Thread.current[:isu3_db] ||= Mysql2::Client.new(
         :host => config['host'],
         :port => config['port'],
         :username => config['username'],
         :password => config['password'],
         :database => config['dbname'],
         :reconnect => true,
+      )
+    end
+
+    def redis_db
+      Thread.current[:isu4_db] ||= Redis.new(
+        :host   => "127.0.0.1",
+        :port   => 6379,
+        :driver => :hiredis
       )
     end
 
@@ -72,6 +82,10 @@ class Isucon3App < Sinatra::Base
       end
       base = "#{scheme}://#{request.host}#{port}#{request.script_name}"
       "#{base}#{path}"
+    end
+
+    def memo_html_key(memo_id)
+      return "memo:#{memo_id}"
     end
   end
 
@@ -183,7 +197,10 @@ class Isucon3App < Sinatra::Base
       end
     end
     memo["username"] = mysql.xquery('SELECT username FROM users WHERE id=?', memo["user"]).first["username"]
-    memo["content_html"] = gen_markdown(memo["content"])
+    memo_redis_key = memo_html_key(memo['id'])
+    #memo["content_html"] = gen_markdown(memo["content"])
+    memo["content_html"] = redis_db.get(memo_redis_key)
+
     if user["id"] == memo["user"]
       cond = ""
     else
@@ -224,6 +241,11 @@ class Isucon3App < Sinatra::Base
       Time.now,
     )
     memo_id = mysql.last_id
+
+    memo_html_key = memo_html_key(memo_id)
+    content_html  = gen_markdown(contentparams["content"])
+    redis_db.set(memo_html_key, content_html)
+
     redirect "/memo/#{memo_id}"
   end
 
