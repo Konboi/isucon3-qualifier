@@ -82,14 +82,13 @@ class Isucon3App < Sinatra::Base
     total = mysql.query("SELECT count(*) AS c FROM memos WHERE is_private=0").first["c"]
     memos = mysql.query(
       "SELECT
-           memos.id, memos.user, user.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at
+           memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at
        FROM
            memos inner join users on memos.user = users.id
        WHERE
            is_private=0
        ORDER BY
-           created_at DESC, id DESC
-       LIMIT 100")
+           created_at DESC, id DESC LIMIT 100")
 
     #memos.each do |row|
     #  row["username"] = mysql.xquery("SELECT username FROM users WHERE id=?", row["user"]).first["username"]
