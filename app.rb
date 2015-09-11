@@ -86,7 +86,7 @@ class Isucon3App < Sinatra::Base
        FROM
            memos inner join users on memos.user = users.id
        WHERE
-           is_private=0 and users.id = ?
+           is_private=0
        ORDER BY
            created_at DESC, id DESC
        LIMIT 100")
