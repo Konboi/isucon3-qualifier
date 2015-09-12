@@ -13,8 +13,8 @@ require 'redis-rack'
 require "rack/session/redis"
 
 class Isucon3App < Sinatra::Base
-  #use Rack::Session::Redis, {
-  use Rack::Session::Dalli, :key => 'isucon_session'
+  use Rack::Session::Redis,  :key => 'isucon_session'
+  #use Rack::Session::Dalli, :key => 'isucon_session'
 
   helpers do
     set :erb, :escape_html => true
