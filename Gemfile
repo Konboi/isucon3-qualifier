@@ -12,6 +12,7 @@ gem 'redis'
 gem 'hiredis'
 gem 'rack-session-redis', :git => "git://github.com/vangberg/rack-session-redis.git"
 gem 'redis-rack'
+gem 'rhebok'
 
 group :development do
   # run "bundle exec shotgun" on development
