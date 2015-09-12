@@ -12,11 +12,8 @@ require 'redis-rack'
 require "rack/session/redis"
 
 class Isucon3App < Sinatra::Base
-  use Rack::Session::Redis, {
-    :expire_after => 100000,
-    :key          => 'isucon_session',
-    :namespace    => 'isucon:',
-  }
+  #use Rack::Session::Redis, {
+  use Rack::Session::Dalli, :key => 'isucon_session'
 
   helpers do
     set :erb, :escape_html => true
