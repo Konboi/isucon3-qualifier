@@ -98,10 +98,8 @@ class Isucon3App < Sinatra::Base
     total = mysql.query("SELECT count(*) AS c FROM memos WHERE is_private=0").first["c"]
     # join せずに澄むようusernameカラムを追加したい
     memos = mysql.query(
-      "SELECT
-           memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at
-       FROM
-           memos inner join users on memos.user = users.id
+      "SELECT * FROM
+           memos
        WHERE
            is_private=0
        ORDER BY
@@ -127,9 +125,9 @@ class Isucon3App < Sinatra::Base
     total = mysql.xquery('SELECT count(*) AS c FROM memos WHERE is_private=0').first["c"]
     memos = mysql.xquery(
       "SELECT
-           memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at
+           *
        FROM
-           memos inner join users on users.id = memos.user
+           memos
        WHERE
            is_private=0
        ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}")
@@ -197,7 +195,7 @@ class Isucon3App < Sinatra::Base
     mysql = connection
     user  = get_user
 
-    memo = mysql.xquery('SELECT memos.id, user, users.username as username, content, is_private, created_at, updated_at FROM memos inner join users on users.id = memos.user WHERE id=?', params[:memo_id]).first
+    memo = mysql.xquery('SELECT * FROM memos WHERE id=?', params[:memo_id]).first
     unless memo
       halt 404, "404 Not Found"
     end
