@@ -4,7 +4,6 @@ require 'json'
 require 'mysql2-cs-bind'
 require 'digest/sha2'
 require 'dalli'
-require 'rack/session/dalli'
 require 'erubis'
 require 'tempfile'
 require 'redis'
@@ -13,9 +12,8 @@ require 'redis-rack'
 require "rack/session/redis"
 
 class Isucon3App < Sinatra::Base
-  $stdout.sync = true
   use Rack::Session::Redis, {
-    :expire_after => 30 * 24 * 60 * 60
+    :expire_after => 60
   }
 
   helpers do
@@ -124,13 +122,7 @@ class Isucon3App < Sinatra::Base
     page  = params["page"].to_i
     total = mysql.xquery('SELECT count(*) AS c FROM memos WHERE is_private=0').first["c"]
     memos = mysql.xquery(
-      "SELECT
-           *
-       FROM
-           memos
-       WHERE
-           is_private=0
-       ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}")
+      "SELECT * FROM memos WHERE is_private=0 ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}")
 
     if memos.count == 0
       halt 404, "404 Not Found"
