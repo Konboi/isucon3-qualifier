@@ -38,13 +38,16 @@ def memo_html_key(memo_id)
   return "memo:#{memo_id}"
 end
 
+threads = []
 connection.xquery("SELECT * FROM memos").each do |row|
-  content = row['content']
-  memo_id = row['id']
+  threads << Thread.new do
+    content = row['content']
+    memo_id = row['id']
 
-  content_html = gen_markdown(content)
-  memo_html_key = memo_html_key(memo_id)
+    content_html = gen_markdown(content)
+    memo_html_key = memo_html_key(memo_id)
 
-  redis_db.set(memo_html_key, content_html)
-  puts "id: #{row["id"]} end"
+    redis_db.set(memo_html_key, content_html)
+    puts "id: #{row["id"]} end"
+  end
 end
