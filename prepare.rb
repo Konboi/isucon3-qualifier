@@ -39,15 +39,11 @@ def memo_html_key(memo_id)
 end
 
 threads = []
-connection.xquery("SELECT * FROM memos").each do |row|
+connection.xquery("SELECT memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at FROM memos inner join ").each do |row|
   threads << Thread.new do
-    content = row['content']
-    memo_id = row['id']
 
-    content_html = gen_markdown(content)
-    memo_html_key = memo_html_key(memo_id)
+    mysql.xquery("UPDATE memos SET username = ? WHERE id=?", row["username"], row["id"])
 
-    redis_db.set(memo_html_key, content_html)
     puts "id: #{row["id"]} end"
   end
 end
