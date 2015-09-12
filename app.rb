@@ -197,7 +197,7 @@ class Isucon3App < Sinatra::Base
     mysql = connection
     user  = get_user
 
-    memo = mysql.xquery('SELECT id, user, users.username as username, content, is_private, created_at, updated_at FROM memos inner join users on users.id = memos.user WHERE id=?', params[:memo_id]).first
+    memo = mysql.xquery('SELECT memos.id, user, users.username as username, content, is_private, created_at, updated_at FROM memos inner join users on users.id = memos.user WHERE id=?', params[:memo_id]).first
     unless memo
       halt 404, "404 Not Found"
     end
