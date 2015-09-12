@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'sinatra/base'
 require 'json'
 require 'mysql2-cs-bind'
@@ -13,7 +14,9 @@ require "rack/session/redis"
 
 class Isucon3App < Sinatra::Base
   $stdout.sync = true
-  use Rack::Session::Redis, :expire_after => 30 * 24 * 60 * 60
+  use Rack::Session::Redis, {
+    :expire_after => 30 * 24 * 60 * 60
+  }
 
   helpers do
     set :erb, :escape_html => true
@@ -93,6 +96,7 @@ class Isucon3App < Sinatra::Base
     user  = get_user
 
     total = mysql.query("SELECT count(*) AS c FROM memos WHERE is_private=0").first["c"]
+    # join せずに澄むようusernameカラムを追加したい
     memos = mysql.query(
       "SELECT
            memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at
@@ -101,7 +105,8 @@ class Isucon3App < Sinatra::Base
        WHERE
            is_private=0
        ORDER BY
-           created_at DESC, id DESC LIMIT 100")
+           created_at DESC, id DESC LIMIT 100"
+    )
 
     #memos.each do |row|
     #  row["username"] = mysql.xquery("SELECT username FROM users WHERE id=?", row["user"]).first["username"]
@@ -192,7 +197,7 @@ class Isucon3App < Sinatra::Base
     mysql = connection
     user  = get_user
 
-    memo = mysql.xquery('SELECT id, user, content, is_private, created_at, updated_at FROM memos WHERE id=?', params[:memo_id]).first
+    memo = mysql.xquery('SELECT id, user, users.username as username, content, is_private, created_at, updated_at FROM memos inner join users on users.id = memos.user WHERE id=?', params[:memo_id]).first
     unless memo
       halt 404, "404 Not Found"
     end
@@ -201,9 +206,10 @@ class Isucon3App < Sinatra::Base
         halt 404, "404 Not Found"
       end
     end
-    memo["username"] = mysql.xquery('SELECT username FROM users WHERE id=?', memo["user"]).first["username"]
-    memo_redis_key = memo_html_key(memo['id'])
+    # memo["username"] = mysql.xquery('SELECT username FROM users WHERE id=?', memo["user"]).first["username"]
     #memo["content_html"] = gen_markdown(memo["content"])
+
+    memo_redis_key = memo_html_key(memo['id'])
     memo["content_html"] = redis_db.get(memo_redis_key)
 
     if user["id"] == memo["user"]
@@ -239,11 +245,10 @@ class Isucon3App < Sinatra::Base
     anti_csrf
 
     mysql.xquery(
-      'INSERT INTO memos (user, content, is_private, created_at) VALUES (?, ?, ?, ?)',
+      'INSERT INTO memos (user, content, is_private, created_at) VALUES (?, ?, ?, NOW())',
       user["id"],
       params["content"],
       params["is_private"].to_i,
-      Time.now,
     )
     memo_id = mysql.last_id
 
