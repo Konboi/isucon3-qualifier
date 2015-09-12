@@ -42,7 +42,6 @@ threds = []
 connection.xquery("SELECT memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at FROM memos inner join users on users.id = memos.user").each do |row|
   threds << Thread.new do
     connection.xquery("UPDATE memos SET username = ? WHERE id=?", row["username"], row["id"])
-    puts "id: #{row["id"]} end"
   end
 end
 threads.each { |t| t.join }
