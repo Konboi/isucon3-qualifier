@@ -11,6 +11,7 @@ gem 'unicron'
 gem 'redis'
 gem 'hiredis'
 gem 'rack-session-redis'
+gem 'redis-rack'
 
 group :development do
   # run "bundle exec shotgun" on development
