@@ -38,10 +38,7 @@ def memo_html_key(memo_id)
   return "memo:#{memo_id}"
 end
 
-threds = []
-connection.xquery("SELECT memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at FROM memos inner join users on users.id = memos.user").each do |row|
-  threds << Thread.new do
-    connection.xquery("UPDATE memos SET username = ? WHERE id=?", row["username"], row["id"])
-  end
+connection.xquery("SELECT * FROM memos").each do |row|
+  user = connection.xquery("select username from users where id = ?", row["user"])
+  connection.xquery("UPDATE memos SET username = ? WHERE id=?", user["username"], row["id"])
 end
-threads.each { |t| t.join }
