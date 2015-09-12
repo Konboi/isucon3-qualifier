@@ -27,7 +27,7 @@ body {
 <% if user["username"] %>
 <li><a href="/mypage">MyPage</a></li>
 <li>
-  <form action="/signout" method="post">
+  <form action="<%= url_for('/signout') %>" method="post">
     <input type="hidden" name="sid" value="<%= session['token'] %>">
     <input type="submit" value="SignOut">
   </form>
@@ -48,7 +48,7 @@ body {
 
 </div> <!-- /container -->
 
-<script type="text/javascript" src="/js/jquery.min.js'"></script>
-<script type="text/javascript" src="'/js/bootstrap.min.js'"></script>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 </body>
 </html>
