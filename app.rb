@@ -119,10 +119,10 @@ class Isucon3App < Sinatra::Base
     mysql = connection
     user  = get_user
 
-    page  = params["page"].to_i
-    total = mysql.xquery('SELECT count(*) AS c FROM memos WHERE is_private=0').first["c"]
-    memos = mysql.xquery(
-      "SELECT * FROM memos WHERE is_private=0 ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}")
+    page   = params["page"].to_i
+    total  = mysql.xquery('SELECT count(*) AS c FROM memos WHERE is_private=0').first["c"]
+    offset = mysql.xquery("SELECT created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC, id DESC LIMIT 1 OFFSET #{page * 100}").first
+    memos  = mysql.xquery("SELECT * FROM memos WHERE is_private=0 where created_at <= ? ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET #{page * 100}", offset["created_at"])
 
     if memos.count == 0
       halt 404, "404 Not Found"
