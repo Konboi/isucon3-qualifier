@@ -10,7 +10,7 @@ gem 'mysql2-cs-bind'
 gem 'unicron'
 gem 'redis'
 gem 'hiredis'
-gem 'rack-session-redis'
+gem 'rack-session-redis', :git => "git://github.com/vangberg/rack-session-redis.git"
 gem 'redis-rack'
 
 group :development do
