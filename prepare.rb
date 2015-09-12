@@ -38,12 +38,11 @@ def memo_html_key(memo_id)
   return "memo:#{memo_id}"
 end
 
-threads = []
+threds = []
 connection.xquery("SELECT memos.id, memos.user, users.username as username, memos.content, memos.is_private, memos.created_at, memos.updated_at FROM memos inner join users on users.id = memos.user").each do |row|
-  threads << Thread.new do
-
-    mysql.xquery("UPDATE memos SET username = ? WHERE id=?", row["username"], row["id"])
-
+  threds << Thread.new do
+    connection.xquery("UPDATE memos SET username = ? WHERE id=?", row["username"], row["id"])
     puts "id: #{row["id"]} end"
   end
 end
+threads.each { |t| t.join }
